@@ -15,12 +15,16 @@ class AuthService {
   bool get isSignedIn => currentUser != null;
 
   /// Google Sign-In via Supabase OAuth. On web this redirects the browser
-  /// through Google and back to the app's own origin; on Android it opens
-  /// a browser tab and returns via the app's deep link scheme.
+  /// through Google and back to whichever origin the app is currently
+  /// running on (so this works from localhost during dev and from the
+  /// deployed domain in production, without depending on Supabase's Site
+  /// URL default); on Android it opens a browser tab and returns via the
+  /// app's deep link scheme. The origin used here must be present in
+  /// Supabase's Authentication > URL Configuration > Redirect URLs.
   Future<bool> signInWithGoogle() {
     return _client.auth.signInWithOAuth(
       OAuthProvider.google,
-      redirectTo: kIsWeb ? null : AppConstants.oauthRedirectMobile,
+      redirectTo: kIsWeb ? Uri.base.origin : AppConstants.oauthRedirectMobile,
       authScreenLaunchMode: kIsWeb ? LaunchMode.platformDefault : LaunchMode.externalApplication,
     );
   }
