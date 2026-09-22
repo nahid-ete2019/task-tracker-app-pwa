@@ -1,0 +1,15 @@
+{
+    "$schema": "https://openapi.vercel.sh/vercel.json",
+    "buildCommand": "chmod +x vercel-build.sh && ./vercel-build.sh",
+    "outputDirectory": "build/web",
+    "installCommand": "echo 'Flutter is installed by vercel-build.sh'",
+    "rewrites": [
+        { "source": "/(.*)", "destination": "/index.html" }
+    ],
+    "headers": [
+        {
+            "source": "/flutter_service_worker.js",
+            "headers": [{ "key": "Cache-Control", "value": "no-cache" }]
+        }
+    ]
+}
