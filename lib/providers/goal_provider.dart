@@ -23,19 +23,19 @@ class GoalListNotifier extends AsyncNotifier<List<GoalModel>> {
     final user = ref.read(currentUserProvider);
     if (user == null) return;
     final created = await ref.read(goalServiceProvider).createGoal(draft, user.id);
-    state = AsyncValue.data([created, ...state.value ?? []]);
+    state = AsyncValue.data([created, ...state.value ?? <GoalModel>[]]);
   }
 
   Future<void> editGoal(GoalModel goal) async {
     final updated = await ref.read(goalServiceProvider).updateGoal(goal);
-    final list = [...state.value ?? []];
+    final list = <GoalModel>[...state.value ?? <GoalModel>[]];
     final idx = list.indexWhere((g) => g.id == goal.id);
     if (idx != -1) list[idx] = updated;
     state = AsyncValue.data(list);
   }
 
   Future<void> deleteGoal(String id) async {
-    final previous = state.value ?? [];
+    final previous = state.value ?? <GoalModel>[];
     state = AsyncValue.data(previous.where((g) => g.id != id).toList());
     await ref.read(goalServiceProvider).deleteGoal(id);
   }

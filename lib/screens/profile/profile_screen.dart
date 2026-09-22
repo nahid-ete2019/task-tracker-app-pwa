@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/theme/app_colors.dart';
+import '../../models/habit_model.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/goal_provider.dart';
 import '../../providers/habit_provider.dart';
@@ -20,7 +21,7 @@ class ProfileScreen extends ConsumerWidget {
 
     final taskCount = tasksAsync.value?.length ?? 0;
     final goalCount = goalsAsync.value?.length ?? 0;
-    final bestStreak = (habitsAsync.value?.habits ?? [])
+    final bestStreak = (habitsAsync.value?.habits ?? const <HabitModel>[])
         .map((h) => habitsAsync.value!.streakFor(h.id))
         .fold<int>(0, (best, s) => s > best ? s : best);
 

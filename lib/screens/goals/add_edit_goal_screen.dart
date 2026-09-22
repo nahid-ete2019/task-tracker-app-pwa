@@ -117,7 +117,7 @@ class _AddEditGoalScreenState extends ConsumerState<AddEditGoalScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final goals = widget.isEditing ? ref.watch(goalListProvider).value ?? [] : const <GoalModel>[];
+    final goals = widget.isEditing ? ref.watch(goalListProvider).value ?? const <GoalModel>[] : const <GoalModel>[];
     final liveGoal = widget.isEditing
         ? goals.firstWhere((g) => g.id == widget.goal!.id, orElse: () => widget.goal!)
         : null;

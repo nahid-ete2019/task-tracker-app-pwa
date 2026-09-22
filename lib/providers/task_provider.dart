@@ -28,19 +28,19 @@ class TaskListNotifier extends AsyncNotifier<List<TaskModel>> {
     final user = ref.read(currentUserProvider);
     if (user == null) return;
     final created = await ref.read(taskServiceProvider).createTask(draft, user.id);
-    state = AsyncValue.data([created, ...state.value ?? []]);
+    state = AsyncValue.data([created, ...state.value ?? <TaskModel>[]]);
   }
 
   Future<void> editTask(TaskModel task) async {
     final updated = await ref.read(taskServiceProvider).updateTask(task);
-    final list = [...state.value ?? []];
+    final list = <TaskModel>[...state.value ?? <TaskModel>[]];
     final idx = list.indexWhere((t) => t.id == task.id);
     if (idx != -1) list[idx] = updated;
     state = AsyncValue.data(list);
   }
 
   Future<void> deleteTask(String id) async {
-    final previous = state.value ?? [];
+    final previous = state.value ?? <TaskModel>[];
     state = AsyncValue.data(previous.where((t) => t.id != id).toList());
     try {
       await ref.read(taskServiceProvider).deleteTask(id);
@@ -52,13 +52,13 @@ class TaskListNotifier extends AsyncNotifier<List<TaskModel>> {
 
   Future<void> toggleComplete(TaskModel task) async {
     final newStatus = task.isCompleted ? 'todo' : 'completed';
-    final list = [...state.value ?? []];
+    final list = <TaskModel>[...state.value ?? <TaskModel>[]];
     final idx = list.indexWhere((t) => t.id == task.id);
     if (idx != -1) list[idx] = task.copyWith(status: newStatus);
     state = AsyncValue.data(list);
     try {
       final updated = await ref.read(taskServiceProvider).setStatus(task.id, newStatus);
-      final refreshed = [...state.value ?? []];
+      final refreshed = <TaskModel>[...state.value ?? <TaskModel>[]];
       final i = refreshed.indexWhere((t) => t.id == task.id);
       if (i != -1) refreshed[i] = updated;
       state = AsyncValue.data(refreshed);
