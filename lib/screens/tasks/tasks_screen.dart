@@ -130,7 +130,7 @@ class _TasksScreenState extends ConsumerState<TasksScreen> {
                             onDismissed: (_) => ref.read(taskListProvider.notifier).deleteTask(t.id),
                             child: TaskTile(
                               task: t,
-                              onToggle: () => ref.read(taskListProvider.notifier).toggleComplete(t),
+                              onToggle: () => ref.read(taskListProvider.notifier).cycleStatus(t),
                               onTap: () => context.push(AppRoutes.editTask, extra: t),
                             ),
                           );
@@ -145,10 +145,6 @@ class _TasksScreenState extends ConsumerState<TasksScreen> {
             ],
           ),
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => context.push(AppRoutes.addTask),
-        child: const Icon(Icons.add),
       ),
     );
   }

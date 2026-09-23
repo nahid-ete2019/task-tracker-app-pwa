@@ -50,8 +50,10 @@ class TaskListNotifier extends AsyncNotifier<List<TaskModel>> {
     }
   }
 
-  Future<void> toggleComplete(TaskModel task) async {
-    final newStatus = task.isCompleted ? 'todo' : 'completed';
+  /// Cycles a task through todo -> in_progress -> completed -> todo.
+  Future<void> cycleStatus(TaskModel task) async {
+    const order = ['todo', 'in_progress', 'completed'];
+    final newStatus = order[(order.indexOf(task.status) + 1) % order.length];
     final list = <TaskModel>[...state.value ?? <TaskModel>[]];
     final idx = list.indexWhere((t) => t.id == task.id);
     if (idx != -1) list[idx] = task.copyWith(status: newStatus);

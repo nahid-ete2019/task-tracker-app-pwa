@@ -33,8 +33,8 @@ class TaskTile extends StatelessWidget {
               GestureDetector(
                 onTap: onToggle,
                 child: Icon(
-                  task.isCompleted ? Icons.check_circle_rounded : Icons.radio_button_unchecked_rounded,
-                  color: task.isCompleted ? AppColors.success : AppColors.textMuted,
+                  _statusIcon(task.status),
+                  color: AppColors.statusColor(task.status),
                   size: 26,
                 ),
               ),
@@ -55,6 +55,20 @@ class TaskTile extends StatelessWidget {
                     const SizedBox(height: 6),
                     Row(
                       children: [
+                        if (task.status == 'in_progress') ...[
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                            decoration: BoxDecoration(
+                              color: AppColors.info.withOpacity(0.12),
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: const Text(
+                              'In Progress',
+                              style: TextStyle(fontSize: 10.5, fontWeight: FontWeight.w700, color: AppColors.info),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                        ],
                         if (task.dueDate != null) ...[
                           Icon(Icons.schedule_rounded, size: 13, color: overdue ? AppColors.danger : AppColors.textMuted),
                           const SizedBox(width: 4),
@@ -80,5 +94,17 @@ class TaskTile extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  IconData _statusIcon(String status) {
+    switch (status) {
+      case 'in_progress':
+        return Icons.timelapse_rounded;
+      case 'completed':
+        return Icons.check_circle_rounded;
+      case 'todo':
+      default:
+        return Icons.radio_button_unchecked_rounded;
+    }
   }
 }

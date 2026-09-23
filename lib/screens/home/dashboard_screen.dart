@@ -239,7 +239,7 @@ class _DashboardBody extends ConsumerWidget {
                       padding: const EdgeInsets.only(bottom: 10),
                       child: TaskTile(
                         task: t,
-                        onToggle: () => ref.read(taskListProvider.notifier).toggleComplete(t),
+                        onToggle: () => ref.read(taskListProvider.notifier).cycleStatus(t),
                         onTap: () => context.push(AppRoutes.editTask, extra: t),
                       ),
                     ))

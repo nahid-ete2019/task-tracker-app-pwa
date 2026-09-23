@@ -24,6 +24,7 @@ class _AddEditTaskScreenState extends ConsumerState<AddEditTaskScreen> {
   late final TextEditingController _descController;
   late String _category;
   late String _priority;
+  late String _status;
   DateTime? _dueDate;
   bool _saving = false;
 
@@ -35,6 +36,7 @@ class _AddEditTaskScreenState extends ConsumerState<AddEditTaskScreen> {
     _descController = TextEditingController(text: t?.description ?? '');
     _category = t?.category ?? AppConstants.taskCategories.first;
     _priority = t?.priority ?? 'medium';
+    _status = t?.status ?? 'todo';
     _dueDate = t?.dueDate;
   }
 
@@ -72,6 +74,7 @@ class _AddEditTaskScreenState extends ConsumerState<AddEditTaskScreen> {
           description: _descController.text.trim(),
           category: _category,
           priority: _priority,
+          status: _status,
           dueDate: _dueDate,
           clearDueDate: _dueDate == null,
         );
@@ -84,7 +87,7 @@ class _AddEditTaskScreenState extends ConsumerState<AddEditTaskScreen> {
           description: _descController.text.trim(),
           category: _category,
           priority: _priority,
-          status: 'todo',
+          status: _status,
           dueDate: _dueDate,
           createdAt: DateTime.now(),
           updatedAt: DateTime.now(),
@@ -98,6 +101,18 @@ class _AddEditTaskScreenState extends ConsumerState<AddEditTaskScreen> {
       }
     } finally {
       if (mounted) setState(() => _saving = false);
+    }
+  }
+
+  String _statusLabel(String status) {
+    switch (status) {
+      case 'in_progress':
+        return 'In Progress';
+      case 'completed':
+        return 'Done';
+      case 'todo':
+      default:
+        return 'Open';
     }
   }
 
@@ -158,6 +173,27 @@ class _AddEditTaskScreenState extends ConsumerState<AddEditTaskScreen> {
                       label: Text(p[0].toUpperCase() + p.substring(1)),
                       selected: selected,
                       onSelected: (_) => setState(() => _priority = p),
+                      selectedColor: color,
+                      labelStyle: TextStyle(color: selected ? Colors.white : color, fontWeight: FontWeight.w600),
+                      backgroundColor: color.withOpacity(0.08),
+                      side: BorderSide(color: color.withOpacity(0.3)),
+                    ),
+                  );
+                }).toList(),
+              ),
+              const SizedBox(height: 14),
+              const Text('Status', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
+              const SizedBox(height: 8),
+              Row(
+                children: AppConstants.taskStatuses.map((s) {
+                  final selected = s == _status;
+                  final color = AppColors.statusColor(s);
+                  return Padding(
+                    padding: const EdgeInsets.only(right: 8),
+                    child: ChoiceChip(
+                      label: Text(_statusLabel(s)),
+                      selected: selected,
+                      onSelected: (_) => setState(() => _status = s),
                       selectedColor: color,
                       labelStyle: TextStyle(color: selected ? Colors.white : color, fontWeight: FontWeight.w600),
                       backgroundColor: color.withOpacity(0.08),

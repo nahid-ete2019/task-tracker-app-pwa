@@ -62,10 +62,6 @@ class GoalsScreen extends ConsumerWidget {
           error: (e, _) => Center(child: Text('Error: $e')),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => context.push(AppRoutes.addGoal),
-        child: const Icon(Icons.add),
-      ),
     );
   }
 }
