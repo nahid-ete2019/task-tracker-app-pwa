@@ -1,0 +1,74 @@
+name: Build Android APK
+
+# This repo intentionally doesn't ship an android/ folder (see README) - it's
+# generated fresh in every run below so it always matches the Flutter version
+# this workflow uses, instead of risking a stale, committed copy going stale.
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'lib/**'
+      - 'pubspec.yaml'
+      - '.github/workflows/build-android-apk.yml'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+
+      - name: Generate the android/ platform folder
+        run: flutter create --platforms=android --org io.nahid.tasktracker .
+
+      - name: Register the OAuth deep link (io.nahid.tasktracker://login-callback)
+        run: |
+          python3 - <<'PY'
+          import pathlib
+
+          manifest = pathlib.Path("android/app/src/main/AndroidManifest.xml")
+          text = manifest.read_text()
+          intent_filter = """
+                  <intent-filter>
+                      <action android:name="android.intent.action.VIEW" />
+                      <category android:name="android.intent.category.DEFAULT" />
+                      <category android:name="android.intent.category.BROWSABLE" />
+                      <data android:scheme="io.nahid.tasktracker" android:host="login-callback" />
+                  </intent-filter>
+              </activity>"""
+          updated = text.replace("</activity>", intent_filter, 1)
+          if updated == text:
+              raise SystemExit("Could not find </activity> in the generated AndroidManifest.xml")
+          manifest.write_text(updated)
+          PY
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Build release APK
+        run: |
+          flutter build apk --release \
+            --dart-define=SUPABASE_URL=https://tijlinmedzmukrmjxxuj.supabase.co \
+            --dart-define=SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRpamxpbm1lZHptdWtybWp4eHVqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAwOTg0ODMsImV4cCI6MjEwNTY3NDQ4M30.E_4p4iybZ6dNGGhnA3FYlyg9r5_BaxcjLdYqNd6xwB4
+        # SUPABASE_ANON_KEY is Supabase's public "anon" key, meant to ship inside
+        # client bundles (it's already embedded in the deployed web build) -
+        # the real access boundary is the Row Level Security policies in
+        # supabase/schema.sql, not secrecy of this key.
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: task-tracker-app-release-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
+          retention-days: 30
