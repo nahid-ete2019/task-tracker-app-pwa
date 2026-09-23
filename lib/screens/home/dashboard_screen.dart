@@ -202,18 +202,28 @@ class _DashboardBody extends ConsumerWidget {
           ),
         ),
         const SizedBox(height: 18),
-        GridView.count(
-          crossAxisCount: 4,
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          crossAxisSpacing: 10,
-          mainAxisSpacing: 10,
-          childAspectRatio: 0.85,
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            StatCard(icon: Icons.list_alt_rounded, label: 'Total Tasks', value: '${tasks.length}', color: AppColors.primary),
-            StatCard(icon: Icons.hourglass_bottom_rounded, label: 'In Progress', value: '$inProgress', color: AppColors.info),
-            StatCard(icon: Icons.check_circle_rounded, label: 'Completed', value: '$completedTotal', color: AppColors.success),
-            StatCard(icon: Icons.error_outline_rounded, label: 'Overdue', value: '$overdue', color: AppColors.danger),
+            Expanded(
+              child: StatCard(
+                  icon: Icons.list_alt_rounded, label: 'Total Tasks', value: '${tasks.length}', color: AppColors.primary),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: StatCard(
+                  icon: Icons.hourglass_bottom_rounded, label: 'In Progress', value: '$inProgress', color: AppColors.info),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: StatCard(
+                  icon: Icons.check_circle_rounded, label: 'Completed', value: '$completedTotal', color: AppColors.success),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: StatCard(
+                  icon: Icons.error_outline_rounded, label: 'Overdue', value: '$overdue', color: AppColors.danger),
+            ),
           ],
         ),
         const SizedBox(height: 24),
